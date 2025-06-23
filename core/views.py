@@ -12,7 +12,7 @@ def application(request):
         try:
             if form.is_valid():
                 form.save()
-                messages.success(request, "Application submitted successfully and is under review.")
+                messages.success(request, "Application submitted successfully and is under review and you will be notified via email once your application is Accepted.")
                 return redirect("core:application")
             else:
                 # Show form validation errors using Django messages

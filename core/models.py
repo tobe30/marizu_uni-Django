@@ -7,6 +7,7 @@ from userauths.models import Profile
 from django.dispatch import receiver
 from django.utils.crypto import get_random_string
 import logging
+from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +53,10 @@ class Application(models.Model):
 
 @receiver(post_save, sender=Application)
 def create_student_account(sender, instance, created, **kwargs):
+    
     if instance.status == 'Accepted':
         user = User.objects.filter(email=instance.email).first()
-        
+
         if not user:
             password = get_random_string(length=10)
             user = User.objects.create_user(
@@ -66,7 +68,6 @@ def create_student_account(sender, instance, created, **kwargs):
         else:
             password = None  # Already exists
 
-        # Now, update or create the profile
         profile, created = Profile.objects.get_or_create(user=user)
         profile.full_name = instance.full_name
         profile.phone = instance.phone
@@ -74,7 +75,39 @@ def create_student_account(sender, instance, created, **kwargs):
         profile.save()
 
         if password:
+            subject = 'Your Account Details'
+            message = f'''
+Hi {instance.full_name},
+
+Congratulations! Your application has been accepted.
+
+Here are your login details for the student portal:
+
+Email: {instance.email}
+Password: {password}
+
+Please login and change your password after your first login.
+
+Best regards,
+The School Team
+'''
+            send_mail(subject, message, 'your_email@gmail.com', [instance.email])
             print(f"Generated password for {user.email} is: {password}")
+
+    elif instance.status == 'Rejected':
+        subject = 'Application Status - Rejected'
+        message = f'''
+Dear {instance.full_name},
+
+We regret to inform you that your application has been rejected.
+
+If you believe this was a mistake, please contact the admissions office for clarification.
+
+Best regards,
+The School Team
+'''
+        send_mail(subject, message, 'your_email@gmail.com', [instance.email])
+
 
             # logger.info(f"Generated for {user.email} is: {password}") 
             # cindy k1Iw0k4alm
