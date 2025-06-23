@@ -1,0 +1,105 @@
+
+{% extends "include/base.html"%}
+
+{% block content%}
+{% load static %}
+
+<style>
+  .jam-b{
+  padding: 10px 20px;
+  border: 1px solid #275D3C;
+  cursor: pointer;
+}
+.jam-b:hover{
+  background-color: #275D3C;
+  color: #fff;
+  transition: all 0.3s ease-in-out;
+  border-radius: 5px;
+}
+.head-f{
+  background-color: #275D3C;
+}
+
+.jam-sub{
+  padding: 8px 20px;
+  background-color: #275D3C;
+  color: #fff;
+  border: none;
+  transition: 0.5s;
+  
+}
+
+.jam-sub:hover{
+  background: transparent;
+  border: 1px solid #275D3C;
+  color: #000;
+}
+</style>
+
+<main id="main" class="main">
+<div class="container mt-5 mb-5">
+    <div class="card shadow-lg">
+      <div class="card-header head-f text-white">
+        <h4 class="mb-1 mt-1">Update Profile</h4>
+      </div>
+      <div class="card-body">
+       <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+           <div class="mb-3">
+            <label for="fullname" class="form-label">Username</label>
+           {{form.username}}
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">email</label>
+           {{form.email}}
+          </div>
+          <div class="mb-3">
+            <label for="fullname" class="form-label">Full Name</label>
+            {{form.full_name}}
+          </div>
+  
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            {{form.phone}}
+          </div>
+  
+         <div class="mb-3">
+  <label for="jamb" class="form-label">Faculty</label>
+  
+  <!-- Show faculty name as plain text -->
+  <input type="text" class="form-control" value="{{ profile.faculty.name }}" disabled>
+
+  <!-- Hidden field to submit actual value -->
+  <input type="hidden" name="faculty" value="{{ profile.faculty.id }}">
+</div>
+
+    {% if request.user.user_type == 'student'%}
+      <div class="mb-3">
+      <label for="jamb" class="form-label">Reg Number</label>
+      <!-- Show reg number as plain text -->
+      <input type="text" class="form-control" value="{{ application.jamb_reg_number }}" disabled>
+      <!-- Hidden field to submit actual value -->
+           </div>
+           {% endif %}
+
+          <div class="mb-3">
+            <label for="jamb_score" class="form-label">Bio</label>
+              {{ form.bio }}
+          </div>
+          {% if request.user.user_type == 'student'%}
+          <div class="mb-3">
+            <label for="jamb_score" class="form-label">Current year</label>
+              {{ form.level }}
+          </div>
+          {% endif %}
+          <div class="d-grid">
+            <button type="submit" class="jam-sub">
+              Submit Application <i class="bi bi-send ms-2"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+  {% endblock content %}

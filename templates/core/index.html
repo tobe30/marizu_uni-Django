@@ -1,0 +1,427 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marizu University</title>
+    <link href="{% static 'assets/img/mu5.png' %}" rel="icon">
+
+
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/bootstrap-icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+</head>
+<body>
+
+     <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="container d-flex align-items-center justify-content-between">
+
+      <a href="{% url 'core:index' %}" class="logo d-flex align-items-center me-auto me-lg-0">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <img src="{% static 'assets/img/mu5.png' %}"  alt="">
+        <!-- <h1>Yummy<span>.</span></h1> -->
+      </a>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#menu">Admissions</a></li>
+          <li><a href="#events">Campus Life</a></li>
+          <li><a href="#chefs">Academics</a></li>
+          <li><a href="#gallery">Research</a></li>
+        </ul>
+      </nav><!-- .navbar -->
+
+
+      {% if not user.is_authenticated %}
+        <a class="btn-book-a-table" href="{% url 'userauths:sign-in' %}">Portal</a>
+      {% else %}
+        <a class="btn-book-a-table" href="{% url 'userauths:logout' %}">logout</a>
+    {% endif %}
+      <i class="mobile-nav-toggle mobile-nav-show bi bi-list" style="color: #fff;"></i>
+      <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+
+    </div>
+  </header><!-- End Header -->
+
+  <!-- ***** Main Banner Area Start ***** -->
+  <section class="section main-banner" id="top" data-section="section1">
+    <video autoplay muted loop id="bg-video">
+        <source src="{% static 'assets/img/7712309-hd_1920_1080_30fps.mp4' %}" type="video/mp4" />
+    </video>
+
+    <div class="video-overlay header-text">
+        <div class="caption">
+            <h2>Greatness</h2>
+            <h2><em> Our</em> No 1 <em> Priority </em></h2>
+            {% if user.is_authenticated %}
+            <div class="main-button">
+                <div class="scroll-to-section"><a href="{% url 'dashboard:dashboard' %}">Dashboard</a></div>
+            </div>
+            {% else %}
+            <div class="main-button">
+                <div class="scroll-to-section"><a href="{% url 'userauths:sign-in' %}">Apply Now</a></div>        
+        </div>
+        {% endif %}
+    </div>
+</section>
+<!-- ***** Main Banner Area End ***** -->
+
+<!-- about section -->
+<div id="about" class="about-slider-area">
+  <div class="container mt-5">
+    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="{% static 'assets/img/pexels-boomheadshot-31785125.jpg' %}" height="500px" width="200px" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="{% static 'assets/img/financial-aid.jpg' %}" height="500px" width="200px" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="{% static 'assets/img/IMG_1890.PNG' %}" height="500px" width="200px" class="d-block w-100" alt="...">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+  <div class="container">
+      <h2 class="title-center mt-3">Study at the M of U</h2>
+      <p class="sub-title-full-width">We are a Top 4 Nigerian university and one of the Top 100 in the world. Find out what makes our student experience so rich, meaningful and life-changing. Marizu University is not only a school we build great leaders and memories. Here, we don't just educate — we inspire, empower, and build tomorrow’s great leaders.</p>
+  </div>
+</div>
+
+<!-- admission -->
+<section class="container my-5" id="menu">
+  <div class="row g-4 ">
+
+    <!-- Card 1 -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm position-relative">
+        <div class="position-relative">
+          <img src="{% static 'assets/img/146051-undergrad-1050x700.jpg' %}" class="card-img-top" alt="Undergraduate Studies">
+          <div class="card-title-overlay bg-light px-3 py-2">
+            <h5 class="mb-0 text-success fw-bold">Undergraduate Studies</h5>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Your journey starts here. Choose from more than 200 program options, check the admission requirements and apply online.</p>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <a href="#" class="custom-btn">SEARCH PROGRAMS</a>
+          <a href="application.html" class="custom-btn yellow-btn">BEGIN APPLICATION</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm position-relative">
+        <div class="position-relative">
+          <img src="{% static 'assets/img/IMG_2045.JPG' %}" class="card-img-top" alt="Graduate Studies">
+          <div class="card-title-overlay bg-light px-3 py-2">
+            <h5 class="mb-0 text-success fw-bold">Graduate Studies</h5>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-text">More than 500 graduate programs, 250 specializations and 300 research areas — find out how to take your education to the next level.</p>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <a href="#" class="custom-btn">SEARCH PROGRAMS</a>
+          <a href="application.html" class="custom-btn yellow-btn">BEGIN APPLICATION</a>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm position-relative">
+        <div class="position-relative">
+          <img src="{% static 'assets/img/pexels-diva-plavalaguna-6149793.jpg' %}" class="card-img-top" alt="Continuing Education">
+          <div class="card-title-overlay bg-light px-3 py-2">
+            <h5 class="mb-0 text-success fw-bold">Continuing Education</h5>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Grow your career part-time or online with our 200+ courses and 40+ programs.</p>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <a href="#" class="custom-btn">SEARCH PROGRAMS</a>
+          <a href="application.html" class="custom-btn yellow-btn">BEGIN APPLICATION</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======= Call To Action Section ======= -->
+<section id="events" class="call-to-action">
+  <div class="container" data-aos="fade-up">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 text-center">
+        <h3>Campus Tour</h3>
+        <p>Experience Marizu University firsthand. Join our campus tour to explore our world-class facilities, meet future leaders, and discover what makes our community unique.</p>
+        <a class="cta-btn" href="#">Learn More</a>
+      </div>
+    </div>
+
+  </div>
+</section><!-- End Call To Action Section -->
+
+<!-- ======= weather ======= -->
+<section class="about mt-5">
+  <div class="container mt-5" data-aos="fade-up">
+
+    <div class="row gy-4" data-aos="fade-up">
+      <div class="col-lg-5">
+        <img src="{% static 'assets/img/IMG_1892.PNG' %}" class="img-fluid" style="width: 100%; height: auto;" alt="">
+
+      </div>
+      <div class="col-lg-7 mt-5">
+        <div class="content ps-lg-5">
+          <h3>From Harmattan Season to Raining Season</h3>
+<p>
+  At Marizu University, the journey through the seasons mirrors the growth of our students. From the dry, dusty winds of Harmattan to the refreshing rains that renew the earth, we nurture resilience, adaptability, and excellence. Our campus comes alive with every change, offering students a rich environment to learn, grow, and thrive through every season of life.
+</p>
+<ul>
+  <li><i class="bi bi-check-circle-fill"></i> Experience a vibrant campus life through every season.</li>
+  <li><i class="bi bi-check-circle-fill"></i> Build resilience and adaptability — core values for future leaders.</li>
+  <li><i class="bi bi-check-circle-fill"></i> Grow academically and personally in a dynamic, supportive environment.</li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section><!-- End About Section -->
+
+<!-- academics -->
+<div class="container-fluid py-5">
+  <div class="row g-4">
+    
+    <div class="col-lg-6 mb-2">
+      <div class="position-relative overflow-hidden card-custom">
+        <img src="{% static 'assets/img/pexels-photo-6281041.webp' %}" alt="Forest" class="img-fluid w-100 h-100 object-fit-cover">
+        <div class="overlay-text p-4">
+          <div class="badge bg-dark text-white mb-2 px-3 py-2">Society + Culture</div>
+          <h5 class="card-titles"><a href="#" class="text-white text-decoration-none fw-bold">Honouring exceptional leaders</a></h5>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Card -->
+    <div class="col-lg-6 mb-2">
+      <div class="position-relative overflow-hidden card-custom">
+        <img src="{% static 'assets/img/230510-honorary-degree-spring-2023-main-3000px.jpg' %}" alt="Honouring Leaders" class="img-fluid w-100 h-100 object-fit-cover">
+        <div class="overlay-text p-4">
+          <div class="badge bg-dark text-white mb-2 px-3 py-2">Society + Culture</div>
+          <h5 class="card-titles"><a href="#" class="text-white text-decoration-none fw-bold">Honouring exceptional leaders</a></h5>
+        </div>
+      </div>
+    </div>
+<!-- All Events Button -->
+<div class="mt-5 text-center">
+  <a href="#" class="eventsx">ALL News</a>
+</div>
+  </div>
+</div>
+
+<!-- research -->
+
+<section class="py-5" id="gallery">
+  <div class="container">
+    <div class="row "> <!-- Use gx-5 here for horizontal gap -->
+      
+      <!-- Upcoming Events -->
+      <div class="col-lg-8 mb-5 mb-lg-0 custom-gap">
+        <h2 class="mb-4 ss fw-bold">UPCOMING EVENTS</h2>
+        <div class="row g-3">
+          <!-- Event 1 -->
+          <div class="col-md-4">
+            <div class="card h-100">
+              <img src="{% static 'assets/img/755456-teaser.jpg' %}" class="card-img-top" alt="Event 1">
+              <div class="card-body">
+                <small class="badge text-dark mb-2">THURSDAYS</small>
+                <h6 class="card-title mt-2">Drop-in Astronomical Observing</h6>
+              </div>
+            </div>
+          </div>
+          <!-- Event 2 -->
+          <div class="col-md-4">
+            <div class="card h-100">
+              <img src="{% static 'assets/img/factfake-510x310.jpg' %}" class="card-img-top" alt="Event 2">
+              <div class="card-body">
+                <small class="badge text-dark mb-2">MAY 7, 12 p.m.</small>
+                <h6 class="card-title mt-2">Trending Now: Harnessing Social Media Trends for Impactful Content</h6>
+              </div>
+            </div>
+          </div>
+          <!-- Event 3 -->
+          <div class="col-md-4">
+            <div class="card h-100">
+              <img src="{% static 'assets/img/hesje-observatory-drop-in-teaser.jpg' %}" class="card-img-top" alt="Event 3">
+              <div class="card-body">
+                <small class="badge text-dark mb-2">MAY 7, 6:30 p.m.</small>
+                <h6 class="card-title mt-2">Chancellor’s Forum on Misinformation: Navigating Truth in a Digital Age</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- All Events Button -->
+        <div class="mt-4 text-center">
+          <a href="#" class="events">ALL EVENTS</a>
+        </div>
+      </div>
+
+      <!-- Weather -->
+      <div class="col-lg-4">
+        <h2 class="mb-4 ss fw-bold">WEATHER</h2>
+        <div class="d-flex align-items-center">
+          <i class="bi bi-cloud" style="font-size: 10rem; color: #ccc;"></i>
+          <div class="ms-3">
+            <h3 class="mb-0 fw-bold" style="color: #275D3C;">8 °C</h3>
+            <small class="d-block">Feels Like 8 °C</small>
+            <h6 class="">Scattered Clouds</h6>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- footer -->
+
+<footer>
+  <div class="footer-area-top">
+      <div class="container">
+          <div class="row">
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                  <div class="footer-box">
+                      <a href="index.html"><img class="img-responsive" src="{% static 'assets/img/mu4.png' %}" alt="logo"></a>
+                      <div class="footer-about">
+                          <p>The Marizu University, its buildings, labs and research stations are primarily located on the territory of Tobe, lands that are now known as part of Ngozi. The Marizu University respects the sovereignty, lands, histories, languages, knowledge systems and cultures of all First Nations.</p>
+                      </div>
+                      <ul class="footer-social">
+                          <li><a href="#"><i class="bi bi-facebook" aria-hidden="true"></i></a></li>
+                          <li><a href="#"><i class="bi bi-twitter" aria-hidden="true"></i></a></li>
+                          <li><a href="#"><i class="bi bi-linkedin" aria-hidden="true"></i></a></li>
+                          <li><a href="#"><i class="bi bi-pinterest" aria-hidden="true"></i></a></li>
+                          <li><a href="#"><i class="bi bi-rss" aria-hidden="true"></i></a></li>
+                          <!-- <li><a href="#"><i class="bi bi-google-plus" aria-hidden="true"></i></a></li> -->
+                      </ul>
+                  </div>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                <div class="footer-item">
+                  <h4>
+                      Useful Links
+                  </h4>
+                  <div class="s-border"></div>
+                  <div class="m-border"></div>
+                  <ul class="links">
+                      <li>
+                          <a href="#"><i class="bi bi-chevron-right"></i>Home</a>
+                      </li>
+                      <li>
+                          <a href=""><i class="bi bi-chevron-right"></i>About Us</a>
+                      </li>
+                      <li>
+                          <a href=""><i class="bi bi-chevron-right"></i>Admissions</a>
+                      </li>
+                      <li>
+                          <a href=""><i class="bi bi-chevron-right"></i>Campus Life</a>
+                      </li>
+                      <li>
+                          <a href=""><i class="bi bi-chevron-right"></i>Academics</a>
+                      </li>
+                      <li>
+                          <a href=""><i class="bi bi-chevron-right"></i>Research</a>
+                      </li>
+                      <li>
+                      </li>
+                  </ul>
+                  
+              </div>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                  <div class="footer-box">
+                      <h3>Information</h3>
+                      <ul class="corporate-address">
+                          <li><i class="bi bi-phone" aria-hidden="true"></i><a href="Phone(01)800433633.html"> (+234) 812 265 2108 </a></li>
+                          <li><i class="bi bi-envelope" aria-hidden="true"></i>tobemarizu@gmail.com</li>
+                      </ul>
+                      <div class="newsletter-area">
+                          <h3>Newsletter</h3>
+                          <div class="input-group stylish-input-group">
+                              <input type="text" placeholder="Enter your e-mail here" class="form-control">
+                              <span class="input-group-addon">
+                                      <button type="submit">
+                                        <i class="bi bi-send"></i>
+                                      </button>  
+                                  </span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div class="footer-item fi-2 clearfix">
+                    <div class="footer-gallery clearfix">
+                        <h4>Our Gallery</h4>
+                        <div class="s-border"></div>
+                        <div class="m-border"></div>
+                        <ul>
+                            <li>
+                                <img src="{% static 'assets/img/CONSTRUCTION.jpeg' %}" alt="small-img">
+                            </li>
+                            <li>
+                                <img src="{% static 'assets/img/covenant-centre-for-learning-resources.jpg' %}" alt="small-img">
+                            </li>
+                            <li>
+                                <img src="{% static 'assets/img/pexels-photo-247819.jpeg' %}" alt="small-img">
+                            </li>
+                            <li>
+                                <img src="{% static 'assets/img/pexels-photo-31735060.webp' %}" alt="small-img">
+                            </li>
+                           
+                        </ul>
+                    </div>
+                </div>
+            </div>
+          </div>
+      </div>
+  </div>
+  <div class="footer-area-bottom">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+          <p>&copy; 2025 Marizu University All Rights Reserved. &nbsp; Designed by 
+            <a target="_blank" href="" rel="nofollow">MazTech</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</footer>
+
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+</body>
+</html>

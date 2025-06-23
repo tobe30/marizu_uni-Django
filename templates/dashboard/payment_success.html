@@ -1,0 +1,12 @@
+{% extends "include/base.html"%}
+
+{% block content%}
+{% load static %}
+
+ <main id="main" class="main">
+
+    <h2>Payment Successful</h2>
+<p>Thank you for your {{ payment_type|title }} payment of ₦{{ amount }}</p>
+<a href="{% url 'dashboard:stu_dashboard' %}">Return to dashboard</a>
+</main>
+  {% endblock content %}

@@ -1,0 +1,539 @@
+{% extends "include/base.html"%}
+
+{% block content%}
+{% load static %}
+{% load humanize %}
+
+  <style>
+    .chart-container {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        height: 300px;
+    }
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+    .dept-labels {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 10px;
+        font-weight: bold;
+    }
+
+    .table-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+  }
+  .table {
+      color: white;
+  }
+  .table thead {
+      background: #fff;
+      color: #000;
+  }
+  .table tbody tr {
+      background: #fff;
+      color: #000;
+  }
+  .table tbody td a{
+    color: #737373;
+    
+  }
+  .table tbody tr:hover {
+      background: #f1f1f1;
+  }
+  .profile-img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+  }
+  .progress {
+      height: 6px;
+      border-radius: 5px;
+      background: #fff;
+  }
+  .progress-bar {
+      background-color: #24AA4E;
+      border-radius: 5px;
+  }
+  .togo {
+      background: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+      padding: 8px 14px;
+      border-radius: 8px;
+  }
+  .togo:hover {
+      background: #fff;
+  }
+  .btn-download {
+      background: #24AA4E;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+  }
+  .btn-download:hover {
+      background: #1E8A3E;
+  }
+  .pagination .page-link {
+      background: #2A2A2A;
+      color: white;
+      border: none;
+      margin: 0 5px;
+      border-radius: 8px;
+  }
+  .pagination .page-item.active .page-link {
+      background: #24AA4E;
+      color: white;
+  }
+  .pagination .page-link:hover {
+      background: #373737;
+  }
+  .checkbox {
+      width: 18px;
+      height: 18px;
+  }
+  .actions {
+      font-size: 1.2rem;
+      cursor: pointer;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 5px 10px;
+    background-color: white;
+}
+.search-bar input {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding: 5px;
+}
+.search-bar i {
+    color: gray;
+}
+
+.active-level {
+  background-color: #24AA4E;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+</style>
+
+
+
+
+  <main id="main" class="main">
+
+    <div class="pagetitle mb-5 d-flex justify-content-between align-items-center">
+      <div>
+          <h1>Attendance Overview</h1>
+      </div>
+      <div class="d-flex align-items-center bg-light p-2 rounded border" id="calendarTrigger">
+          <i class="bi bi-calendar me-2"></i>
+          <div>
+              <small class="text-muted">Today's Date</small>
+              <input type="text" id="datepicker" class="border-0 bg-light" value="13th January, 2025" readonly>
+          </div>
+      </div>
+  </div><!-- End Page Title -->
+    <div class="row g-4">
+      <!-- Card 1: Total Number of Students -->
+      <div class="col-md-3">
+          <div class="card p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="head">Students accepted</h6>
+                  <div class="icon-circle icon-green">
+                      <i class="bi bi-people"></i>
+                  </div>
+              </div>
+              <h3 class="num">{{ accepted_students_count|intcomma }}</h3>
+              <p class="text-small">
+                  Students 
+                  <span class="text-green"><i class="bi bi-arow-up"></i> {{accepted_percentage|floatformat:1}}%</span>
+              </p>
+          </div>
+      </div>
+
+      <!-- Card 2: Attendance Percentage -->
+      <div class="col-md-3">
+          <div class="card p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="head">Pending Students</h6>
+                  <div class="icon-circle icon-red">
+                      <i class="bi bi-clipboard-check"></i>
+                  </div>
+              </div>
+              <h3 class="num">{{pending_students_count|intcomma}}</h3>
+              <p class="text-small">
+                  Pending Student Percentage
+                  <span class="text-red"><i class="bi bi-arrow-dwn"></i> {{ pending_percentage|floatformat:1 }}%</span>
+              </p>
+          </div>
+      </div>
+
+      <!-- Card 3: Total Classes Held -->
+      <div class="col-md-3">
+          <div class="card p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="head">Rejected Students</h6>
+                  <div class="icon-circle icon-orange">
+                      <i class="bi bi-easel"></i>
+                  </div>
+              </div>
+              <h3 class="num">{{rejected_students_count|intcomma}}</h3>
+              <p class="text-small">
+                  Rejected student percentage
+                  <span class="text-green"><i class="bi bi-arow-up"></i> {{ rejected_percentage|floatformat:1 }}%</span>
+              </p>
+          </div>
+      </div>
+
+      <!-- Card 4: Absent Rate -->
+
+  
+    
+    <!-- student name  -->
+    
+    <div class="container">
+      <div class="table-container">
+          <!-- Search -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="search-bar me-3">
+              <i class="fas fa-search me-2"></i>
+              <input type="text" id="searchInput" class="form-control me-2 search-input" placeholder="Search">
+            </div>
+    
+    
+              <div class="d-flex gap-2">
+                  <button class="dropdown-toggle togo">Timeframe</button>
+                  <button class="dropdown-toggle togo">Dept/Course</button>
+                  <button class="dropdown-toggle togo">Percentage</button>
+              </div>
+    
+              <button class="btn-download">Export <i class="bi bi-download"></i></button> 
+          </div>
+    
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="table table-borderless align-middle">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Jamb Score</th>
+                        <th>Jamb Reg Num</th>
+                        <th>Phone</th>
+                        <th>Course name</th>
+
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for student in admissions %}
+                    <tr>
+                      <td class="d-flex align-items-center gap-2">
+                        <a href="view-student.html">
+                          <div class="text-container">
+                              <span class="fw-bold">{{student.full_name}}</span> 
+                              <small class="text-muted d-block">{{student.email}}</small>
+                            </a>
+                    </td>
+                        <td>{{student.jamb_reg_number}}</td>
+                        <td>{{student.jamb_score}}</td>
+
+                        <td>{{student.phone}}</td>
+                        <td>{{ student.course.name }}</td>
+
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-light border-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots fs-5"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="view-student.html"><i class="bi bi-person"></i> View Details</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-send"></i> Send Reminders</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-download"></i> Export</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+            
+            <!-- Bootstrap 5 JS -->
+            
+            
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-light" id="prevPage"><i class="bi bi-arrow-left"></i> Previous</button>
+              <nav>
+                  <ul class="pagination" id="pagination"></ul>
+              </nav>
+              <button class="btn btn-light" id="nextPage">Next <i class="bi bi-arrow-right"></i></button>
+          </div>
+            
+          </div>
+    
+          <!-- Pagination -->
+         
+    
+      </div>
+    </div>
+  </div>
+  
+
+
+
+
+  
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+ 
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+<!-- calendar -->
+
+<!-- table js -->
+
+<script>
+  const rowsPerPage = 5;
+  let currentPage = 1;
+
+  function renderTable() {
+      const tableBody = document.getElementById("tableBody");
+      const rows = Array.from(tableBody.getElementsByTagName("tr"));
+      const totalRows = rows.length;
+
+      // Hide all rows initially
+      rows.forEach(row => row.style.display = "none");
+
+      // Show only the required rows for the current page
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      for (let i = start; i < end && i < totalRows; i++) {
+          rows[i].style.display = "";
+      }
+
+      renderPagination(totalRows);
+  }
+
+  function renderPagination(totalRows) {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = "";
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+      for (let i = 1; i <= totalPages; i++) {
+          pagination.innerHTML += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+              <a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
+      }
+
+      document.getElementById("prevPage").disabled = currentPage === 1;
+      document.getElementById("nextPage").disabled = currentPage === totalPages;
+  }
+
+  function changePage(page) {
+      currentPage = page;
+      renderTable();
+  }
+
+  document.getElementById("prevPage").addEventListener("click", () => {
+      if (currentPage > 1) changePage(currentPage - 1);
+  });
+
+  document.getElementById("nextPage").addEventListener("click", () => {
+      const tableBody = document.getElementById("tableBody");
+      const totalRows = tableBody.getElementsByTagName("tr").length;
+      if (currentPage < Math.ceil(totalRows / rowsPerPage)) changePage(currentPage + 1);
+  });
+
+  // Search functionality
+  document.getElementById("searchInput").addEventListener("input", function () {
+      const searchText = this.value.toLowerCase();
+      const tableBody = document.getElementById("tableBody");
+      const rows = Array.from(tableBody.getElementsByTagName("tr"));
+
+      rows.forEach(row => {
+          const text = row.innerText.toLowerCase();
+          row.style.display = text.includes(searchText) ? "" : "none";
+      });
+
+      // Reset to first page when searching
+      currentPage = 1;
+      renderPagination(rows.filter(row => row.style.display !== "none").length);
+  });
+
+  renderTable();
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      flatpickr("#datepicker", {
+          dateFormat: "d F, Y",
+          defaultDate: "13 January, 2025",
+          onOpen: function() {
+              document.getElementById("datepicker").blur(); // Prevents manual input focus
+          }
+      });
+
+      document.getElementById("calendarTrigger").addEventListener("click", function() {
+          document.getElementById("datepicker")._flatpickr.open();
+      });
+  });
+</script>
+
+
+  <!-- graph -->
+  <script>
+    const ctx = document.getElementById('facultyChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Basic Medical Sci.', 'Law Faculty', 'Education Faculty', 'Physical Science', 'Life Sciences'],
+            datasets: [{
+                data: [80, 69, 50, 45, 40],
+                backgroundColor: ['#343a40', '#007bff', '#28a745', '#fd7e14', '#dc3545']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+  // Updated Line Chart Data
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  new Chart(lineCtx, {
+      type: 'line',
+      data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thur', 'Fri'],
+          datasets: [{
+              label: 'Attendance (%)',
+              data: [90, 70, 80, 40, 50], // Attendance values
+              backgroundColor: 'rgba(0, 128, 0, 0.2)',
+              borderColor: 'rgba(0, 128, 0, 1)',
+              borderWidth: 2,
+              fill: true,
+              pointBackgroundColor: 'rgba(0, 128, 0, 1)',
+              pointBorderColor: '#fff',
+              pointRadius: 5,
+              pointHoverRadius: 7,
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  max: 100,
+                  ticks: {
+                      stepSize: 20,
+                      callback: function(value) {
+                          return value + '%'; // Display percentage
+                      }
+                  }
+              }
+          },
+          plugins: {
+              tooltip: {
+                  callbacks: {
+                      label: function(context) {
+                          let value = context.raw;
+                          return value + '%'; // Show percentage in tooltip
+                      }
+                  }
+              }
+          }
+      }
+  });
+  
+// Expanded attendance data to include up to 600L
+const attendanceData = {
+  "100L": [90, 70, 80, 40, 50],
+ 
+};
+
+const barCtx = document.getElementById('barChart').getContext('2d');
+let barChart = new Chart(barCtx, {
+  type: 'bar',
+  data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thur', 'Fri'],
+      datasets: [{
+          label: 'Percentage',
+          data: attendanceData["100L"],
+          backgroundColor: '#24AA4E',
+          borderRadius: 10,
+      }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+            beginAtZero: true,
+            max: 100, // Ensures the max is 100%
+            ticks: {
+                stepSize: 20, // Space at intervals of 20
+                callback: function(value) {
+                    return value + '%'; // Convert numbers to percentages
+                }
+            }
+        }
+    }
+  }
+});
+
+// Generate level buttons dynamically
+// Generate level buttons dynamically
+const levels = ["100L", "200L", "300L", "400L", "500L", "600L"];
+const levelContainer = document.querySelector('.dept-labels');
+levelContainer.innerHTML = "";
+
+levels.forEach(level => {
+    let span = document.createElement('span');
+    span.className = 'level-btn';
+    span.style.cursor = 'pointer';
+    span.setAttribute('data-level', level);
+    span.innerText = level;
+
+    // Click event to update chart and highlight active level
+    span.addEventListener('click', function() {
+        // Update bar chart data
+        barChart.data.datasets[0].data = attendanceData[level];
+        barChart.update();
+
+        // Remove 'active' class from all buttons
+        document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active-level'));
+
+        // Add 'active' class to the clicked button
+        this.classList.add('active-level');
+    });
+
+    levelContainer.appendChild(span);
+});
+
+// Set default active level
+document.querySelector('.level-btn[data-level="100L"]').classList.add('active-level');
+
+</script>
+ {% endblock content %}

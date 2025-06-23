@@ -1,0 +1,324 @@
+{% extends "include/base.html"%}
+
+{% block content%}
+{% load static %}
+{% load humanize %}
+
+  <style>
+    .chart-container {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        height: 300px;
+    }
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+    .dept-labels {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 10px;
+        font-weight: bold;
+    }
+
+    .card {
+      border-radius: 12px;
+      padding: 15px;
+      height: auto;
+  }
+  .progress {
+      height: 8px;
+      border-radius: 10px;
+  }
+  #facultyChart {
+      max-height: 250px;
+  }
+  .attendance-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+  }
+  .rank {
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f0f0;
+      border-radius: 10%;
+      font-size: 14px;
+      font-weight: bold;
+  }
+  hr {
+      margin-top: 5px;
+      margin-bottom: 20px;
+      border: 0;
+      border-top: 1px solid #ccc;
+  }
+  .progress-bar {
+      border-radius: 5px;
+  }
+
+  #facultyChart {
+    max-height: 250px;
+}
+
+#legend-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Adjust spacing between legend items */
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0 10px;
+
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+.legend-text {
+  flex: 1; /* Allows text to take up remaining space */
+  font-size: 10px;
+  font-weight: 500;
+  text-align: left; /* Ensures left alignment */
+}
+
+.legend-percentage {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right; /* Ensures percentage aligns properly */
+  min-width: 35px; /* Adjust this to keep it straight */
+}
+.active-level {
+  background-color: #24AA4E;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+
+
+</style>
+
+  <main id="main" class="main">
+
+    <div class="pagetitle mb-5 d-flex justify-content-between align-items-center">
+      <div>
+          <h1>Overview</h1>
+          <p>Good Morning, {{request.user.username}}. Here's a quick snapshot of your school today.</p>
+      </div>
+      <div class="d-flex align-items-center bg-light p-2 rounded border" id="calendarTrigger">
+          <i class="bi bi-calendar me-2"></i>
+          <div>
+              <small class="text-muted">Today's Date</small>
+              <input type="text" id="datepicker" class="border-0 bg-light" value="13th January, 2025" readonly>
+          </div>
+      </div>
+  </div><!-- End Page Title -->
+  <section class="section dashboard">
+    <div class="row g-4">
+      <!-- Card 1: Total Number of Students -->
+      <div class="col-md-3">
+          <div class="card p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="head">Students accepted</h6>
+                  <div class="icon-circle icon-green">
+                      <i class="bi bi-people"></i>
+                  </div>
+              </div>
+              <h3 class="num">{{ accepted_students_count|intcomma }}</h3>
+              <p class="text-small">
+                  Students 
+                  <span class="text-green"><i class="bi bi-arow-up"></i> {{accepted_percentage|floatformat:1}}%</span>
+              </p>
+          </div>
+      </div>
+
+      <!-- Card 2: Attendance Percentage -->
+     <div class="col-md-3">
+          <div class="card p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="head">Pending Students</h6>
+                  <div class="icon-circle icon-red">
+                      <i class="bi bi-clipboard-check"></i>
+                  </div>
+              </div>
+              <h3 class="num">{{pending_students_count|intcomma}}</h3>
+              <p class="text-small">
+                  Pending Student Percentage
+                  <span class="text-red"><i class="bi bi-arrow-dwn"></i> {{ pending_percentage|floatformat:1 }}%</span>
+              </p>
+          </div>
+      </div>
+
+      <!-- Card 3: Total Classes Held -->
+      <div class="col-md-3">
+          <div class="card p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="head">Rejected Students</h6>
+                  <div class="icon-circle icon-orange">
+                      <i class="bi bi-easel"></i>
+                  </div>
+              </div>
+              <h3 class="num">{{rejected_students_count|intcomma}}</h3>
+              <p class="text-small">
+                  Rejected student percentage
+                  <span class="text-green"><i class="bi bi-arow-up"></i> {{ rejected_percentage|floatformat:1 }}%</span>
+              </p>
+          </div>
+      </div>
+
+    
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card shadow-sm p-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6>Top 5 Faculty Attendance</h6>
+                  <i class="fas fa-filter rank" style="color: #8B8C8C;"></i>
+              </div>
+              <hr>
+              <div class="d-flex align-items-center">
+                  <!-- Chart Canvas -->
+                  <canvas id="facultyChart" style="flex: 1; max-width: 50%; margin-bottom: 10px;"></canvas>
+                  
+                  <!-- Legend beside the chart -->
+                  <div id="legend-container" class="ms-3 mb-5" style="flex: 1;"></div>
+              </div>
+          </div>
+      </div>
+      
+          <div class="col-md-6">
+  <div class="card shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6>Student leaderboard (Top)</h6>
+      <i class="fas fa-filter rank" style="color: #8B8C8C;"></i>
+    </div>
+    <hr>
+    <div>
+      <div class="d-flex align-items-center mb-2">
+        <span class="rank">1</span>
+        <span class="flex-grow-1 ms-2">Student Accepted</span>
+        <span>{{ accepted_percentage|floatformat:1 }}%</span>
+      </div>
+      <div class="progress bg-light">
+        <div class="progress-bar" style="width: {{ accepted_percentage }}%; background-color: #28a745;"></div>
+      </div>
+
+      <div class="d-flex align-items-center mb-2 mt-2">
+        <span class="rank">2</span>
+        <span class="flex-grow-1 ms-2">Pending Student</span>
+        <span>{{ pending_percentage|floatformat:1 }}%</span>
+      </div>
+      <div class="progress bg-light">
+        <div class="progress-bar" style="width: {{ pending_percentage }}%; background-color: #d63384;"></div>
+      </div>
+
+      <div class="d-flex align-items-center mb-2 mt-2">
+        <span class="rank">3</span>
+        <span class="flex-grow-1 ms-2">Rejected Student</span>
+        <span>{{ rejected_percentage|floatformat:1 }}%</span>
+      </div>
+      <div class="progress bg-light">
+        <div class="progress-bar" style="width: {{ rejected_percentage }}%; background-color: #fd7e14;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+        </div>
+  
+  
+  </div>
+  
+  
+</section>
+
+  
+
+  </main><!-- End #main -->
+
+
+
+  <!-- graph -->
+<script>
+    // Pass Django values to JS
+    const chartData = {
+        accepted: {{ accepted_percentage|floatformat:1 }},
+        pending: {{ pending_percentage|floatformat:1 }},
+        rejected: {{ rejected_percentage|floatformat:1 }}
+    };
+
+    const ctx = document.getElementById('facultyChart').getContext('2d');
+
+    const facultyData = {
+        labels: ['Student Accepted.', 'Pending Student', 'Rejected Student'],
+        datasets: [{
+            data: [chartData.accepted, chartData.pending, chartData.rejected],
+            backgroundColor: ['#343a40', '#0d6efd', '#198754'],
+            borderWidth: 1,
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: facultyData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,  // Hide default legend
+                }
+            }
+        }
+    });
+
+    // Custom legend beside the chart
+    const legendContainer = document.getElementById("legend-container");
+    legendContainer.innerHTML = ""; // Clear previous legends
+
+    facultyData.labels.forEach((label, index) => {
+        const color = facultyData.datasets[0].backgroundColor[index];
+        const percentage = facultyData.datasets[0].data[index].toFixed(1) + "%";
+
+        let legendItem = document.createElement("div");
+        legendItem.classList.add("legend-item");
+
+        let colorBox = document.createElement("span");
+        colorBox.classList.add("legend-color");
+        colorBox.style.backgroundColor = color;
+
+        let text = document.createElement("span");
+        text.classList.add("legend-text");
+        text.innerText = label;
+
+        let percentageText = document.createElement("span");
+        percentageText.classList.add("legend-percentage");
+        percentageText.innerText = percentage;
+
+        legendItem.appendChild(colorBox);
+        legendItem.appendChild(text);
+        legendItem.appendChild(percentageText);
+
+        legendContainer.appendChild(legendItem);
+    });
+</script>
+
+
+
+
+
+  {% endblock content %}
+  

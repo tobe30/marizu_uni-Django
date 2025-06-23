@@ -1,0 +1,40 @@
+{% extends "include/base.html"%}
+
+{% block content%}
+{% load static %}
+
+<main class="main" id="main">
+  <div class="container mt-5">
+    <h4 class="fw-bold text-purple border-bottom pb-2 mb-4">Hostel Fee</h4>
+
+    <form method="post" action="{% url 'dashboard:review_hostel' %}" class="mx-auto" style="max-width: 500px;">
+      {% csrf_token %}
+      
+      <!-- Session Dropdown -->
+      <div class="mb-4">
+        <label for="session" class="form-label">Session</label>
+        <select name="session" id="session" class="form-select">
+          {% for s in sessions%}
+          <option value="{{s.name}}">{{s.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Payment Type Dropdown -->
+      <div class="mb-4">
+        <label for="payment_type" class="form-label">Payment Type:</label>
+        <select name="payment_type" id="payment_type" class="form-select">
+          <option value="hostel">Hostel Fee</option>
+        </select>
+      </div>
+
+      <!-- Pay Button -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-danger px-5">Pay</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+
+{% endblock content %}

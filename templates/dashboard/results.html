@@ -1,0 +1,253 @@
+
+{% extends "include/base.html"%}
+
+{% block content%}
+{% load static %}
+
+<!-- css  -->
+
+   <style>
+      .overview-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden; /* Prevents anything from escaping */
+      }
+
+      .icon {
+        font-size: 24px;
+        float: right;
+      }
+      .growth {
+        color: green;
+        font-weight: bold;
+        margin-right: 5px; /* Reduce gap between 2% and text */
+      }
+
+      .text-muted {
+        font-size: 14px; /* Keep text small */
+      }
+
+      .graph {
+        float: right;
+        color: green;
+      }
+      .graph-img {
+        width: 80px; /* Adjust size if needed */
+        height: auto;
+        max-width: 100%;
+      }
+
+      .table-container { max-width: 100%; overflow-x: auto; }
+      .search-input { width: 250px; } /* Adjust search width */
+      .table-container {
+          background: #fff;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .pagination .page-item.active .page-link {
+         background-color: transparent;
+          border-color: #28a745;
+          border: none;
+          color: gray;
+      }
+      .pagination .page-item .page-link {
+          color: #000;
+      }
+      #lecturerTable td {
+          padding: 15px 10px; /* Adjust as needed */
+          color: #737373;
+      }
+      .iconic {
+        background-color: #24AA4E;
+        text-decoration: none;
+        color: #fff;
+        padding: 10px 10px;
+        border-radius: 10px;
+        font-size: 15px; /* Controls button text size */
+        border: none;
+        display: flex;
+        align-items: center;
+    }
+  
+    .bigger-icon {
+        font-size: 18px; /* Adjust icon size */
+    }
+      .search-bar {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        padding: 5px 10px;
+        background-color: white;
+    }
+    .search-bar input {
+        border: none;
+        outline: none;
+        flex-grow: 1;
+        padding: 5px;
+    }
+    .search-bar i {
+        color: gray;
+    }
+    .icond{
+        background-color: red;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+    }
+    .icond i{
+        color: #fff;
+    }
+    .icone{
+        background-color: #24AA4E;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+    }
+    .icone i{
+        color: #fff;
+    }
+    </style>
+
+<main id="main" class="main">
+<div
+    class="pagetitle mb-2 d-flex justify-content-between align-items-center"
+    >
+    <div>
+        <h1>Lecturer Overview</h1>
+    </div>
+    </div>
+
+<div class="row g-3">
+            <div class="container mt-5">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="fw-bold">Lecturer Management</h4>
+              <div class="d-flex align-items-center">
+                <div class="search-bar me-3">
+                  <i class="fas fa-search me-2"></i>
+                  <input type="text" id="searchInput" class="form-control me-2 search-input" placeholder="Search">
+                </div>
+               <a href="{% url 'dashboard:add_results'%}"><button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="iconic">
+                  <i class="bi bi-plus me-1 bigger-icon"></i> Add Results
+              </button></a> 
+              </div>
+          </div>
+          
+          <div class="table-container">
+              <table class="table table-hover align-middle" id="lecturerTable">
+                  <thead>
+                      <tr>
+                          <th>Student</th>
+                          <th>Course of Study</th>
+                          <th>Session</th>
+                          <th>Semester</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody id="tableBody">
+                    {% for r in result %}
+                    <tr class="mb-5">
+                      <td>{{r.student}}</td>
+                      <td>{{r.course_of_study}}</td>
+                      <td>{{r.session}}</td>
+                      <td>{{r.semester}}</td>
+                      <td><a href="{% url 'dashboard:delete_result' r.pk %}" class="icond"><i class="bi bi-trash"></i></a>
+                        <a href="{% url 'dashboard:edit_result' r.pk %}" class="icone"><i class="bi bi-pen"></i></a>
+                    </td>
+                      
+                  </tr>
+                  {% empty %}
+                  <center><p style="color: red;">Nothing yet</p></center>
+                  {% endfor %}
+                </tbody>
+                
+              </table>
+              
+              <div class="d-flex justify-content-between">
+                  <button class="btn btn-light" id="prevPage"><i class="bi bi-arrow-left"></i> Previous</button>
+                  <nav>
+                      <ul class="pagination" id="pagination"></ul>
+                  </nav>
+                  <button class="btn btn-light" id="nextPage">Next <i class="bi bi-arrow-right"></i></button>
+              </div>
+          </div>
+      </div>
+
+</div>
+</main>
+
+    <script>
+      const rowsPerPage = 5;
+      let currentPage = 1;
+
+      function renderTable() {
+          const tableBody = document.getElementById("tableBody");
+          const rows = Array.from(tableBody.getElementsByTagName("tr"));
+          const totalRows = rows.length;
+
+          // Hide all rows initially
+          rows.forEach(row => row.style.display = "none");
+
+          // Show only the required rows for the current page
+          const start = (currentPage - 1) * rowsPerPage;
+          const end = start + rowsPerPage;
+          for (let i = start; i < end && i < totalRows; i++) {
+              rows[i].style.display = "";
+          }
+
+          renderPagination(totalRows);
+      }
+
+      function renderPagination(totalRows) {
+          const pagination = document.getElementById("pagination");
+          pagination.innerHTML = "";
+          const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+          for (let i = 1; i <= totalPages; i++) {
+              pagination.innerHTML += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                  <a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
+          }
+
+          document.getElementById("prevPage").disabled = currentPage === 1;
+          document.getElementById("nextPage").disabled = currentPage === totalPages;
+      }
+
+      function changePage(page) {
+          currentPage = page;
+          renderTable();
+      }
+
+      document.getElementById("prevPage").addEventListener("click", () => {
+          if (currentPage > 1) changePage(currentPage - 1);
+      });
+
+      document.getElementById("nextPage").addEventListener("click", () => {
+          const tableBody = document.getElementById("tableBody");
+          const totalRows = tableBody.getElementsByTagName("tr").length;
+          if (currentPage < Math.ceil(totalRows / rowsPerPage)) changePage(currentPage + 1);
+      });
+
+      // Search functionality
+      document.getElementById("searchInput").addEventListener("input", function () {
+          const searchText = this.value.toLowerCase();
+          const tableBody = document.getElementById("tableBody");
+          const rows = Array.from(tableBody.getElementsByTagName("tr"));
+
+          rows.forEach(row => {
+              const text = row.innerText.toLowerCase();
+              row.style.display = text.includes(searchText) ? "" : "none";
+          });
+
+          // Reset to first page when searching
+          currentPage = 1;
+          renderPagination(rows.filter(row => row.style.display !== "none").length);
+      });
+
+      renderTable();
+  </script>
+
+{% endblock content %}
