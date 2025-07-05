@@ -28,7 +28,7 @@
 
       <nav id="navbar" class="navbar">
         <ul>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="{% url 'core:index' %}">Home</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#menu">Admissions</a></li>
           <li><a href="#events">Campus Life</a></li>
@@ -65,7 +65,7 @@
             </div>
             {% else %}
             <div class="main-button">
-                <div class="scroll-to-section"><a href="{% url 'userauths:sign-in' %}">Apply Now</a></div>        
+                <div class="scroll-to-section"><a href="{% url 'core:application' %}">Apply Now</a></div>        
         </div>
         {% endif %}
     </div>
@@ -383,7 +383,7 @@
               <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <div class="footer-item fi-2 clearfix">
                     <div class="footer-gallery clearfix">
-                        <h4>Our Gallery</h4>
+                        <h4 class="mt-3 mt-md-1">Our Gallery</h4>
                         <div class="s-border"></div>
                         <div class="m-border"></div>
                         <ul>
