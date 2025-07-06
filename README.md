@@ -1,6 +1,23 @@
 # Marizu Uni - Student Management System 🎓
 
 A Django-based web application for managing student admissions, profiles, and academic results.
+  ADMIN USERNAME ->to signin
+  tobemarizu@gmail.com
+  12345
+
+STUDENT USERNAME -> TO sign in
+cindy@gmail.com
+password: k1Iw0k4alm
+
+divine@gmail.com
+password:ghby9MDkav
+
+camsy@gmail.com
+password:1QIgGLgIxG
+
+TEACHER USERNAME->to signin
+maduemeemeka08@gmail.com
+password:maRizut1#
 
 ---
 
